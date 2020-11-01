@@ -25,8 +25,6 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
-
         for (int i = 0; i < entities.size(); i++){
             ModelComponent mod = entities.get(i).getComponent(ModelComponent.class);
             batch.render(mod.instance, environment);

@@ -23,25 +23,24 @@ public class GameWorld {
 
     private Engine engine;
 
-
-
-
-
     public GameWorld() {
-        initPersCamera();
         initEnvironment();
         initModelBatch();
+        initPersCamera();
+
+        engine = new Engine();
+
+
         ModelBuilder modelBuilder = new ModelBuilder();
         Material boxMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE),
                 ColorAttribute.createSpecular(Color.RED), FloatAttribute.createShininess(16f));
         Model box = modelBuilder.createBox(5, 5, 5, boxMaterial,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        engine = new Engine();
+
         Entity entity = new Entity();
         entity.add(new ModelComponent(box, 10, 10, 10));
-        engine.addSystem(new RenderSystem(modelBatch, environment));
         engine.addEntity(entity);
-
+        engine.addSystem(new RenderSystem(modelBatch, environment));
     }
 
     private void initPersCamera(){
