@@ -18,9 +18,55 @@ import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.mygdx.game.bullet.MotionState;
 import com.mygdx.game.components.BulletComponent;
+import com.mygdx.game.components.CharacterComponent;
 import com.mygdx.game.components.ModelComponent;
+import com.mygdx.game.components.PlayerComponent;
+import com.mygdx.game.systems.BulletSystem;
 
 public class EntityFactory {
+
+    private static ModelBuilder modelBuilder;
+    private static Texture playerTexture;
+    private static Model playerModel;
+    private static Model boxModel;
+
+    static {
+        modelBuilder = new ModelBuilder();
+        playerTexture = new Texture(Gdx.files.internal("data/badlogic.jpg"));
+        Material material = new Material(TextureAttribute.createDiffuse(playerTexture),
+                ColorAttribute.createSpecular(1, 1, 1, 1),
+                FloatAttribute.createShininess(8f));
+        playerModel = modelBuilder.createCapsule(2f, 6f, 16, material,
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal
+                        | VertexAttributes.Usage.TextureCoordinates);
+    }
+
+    private static Entity createCharacter(BulletSystem bulletSystem, float x, float y, float z){
+        Entity entity = new Entity();
+        ModelComponent modelComponent = new ModelComponent(playerModel, x, y, z);
+        entity.add(modelComponent);
+        CharacterComponent characterComponent = new CharacterComponent();
+        characterComponent.ghostObject = new btPairCachingGhostObject();
+        characterComponent.ghostObject.setWorldTransform(modelComponent.instance.transform);
+        characterComponent.ghostShape = new btCapsuleShape(2f, 2f);
+        characterComponent.ghostObject.setCollisionShape(characterComponent.ghostShape);
+        characterComponent.ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
+        characterComponent.characterController = new btKinematicCharacterController(characterComponent.ghostObject,
+                                                    characterComponent.ghostShape, .35f);
+        characterComponent.ghostObject.userData = entity;
+        entity.add(characterComponent);
+        bulletSystem.collisionWorld.addCollisionObject(entity.getComponent(CharacterComponent.class).ghostObject,
+                (short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,
+                (short)(btBroadphaseProxy.CollisionFilterGroups.AllFilter));
+        bulletSystem.collisionWorld.addAction(entity.getComponent(CharacterComponent.class).characterController);
+        return entity;
+    }
+
+    public static Entity createPlayer(BulletSystem bulletSystem, float x, float y, float z){
+        Entity entity = createCharacter(bulletSystem, x, y, z);
+        entity.add(new PlayerComponent());
+        return entity;
+    }
 
     public static Entity createStaticEntity(Model model, float x, float y, float z) {
 

@@ -12,44 +12,116 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.mygdx.game.components.CharacterComponent;
 import com.mygdx.game.components.ModelComponent;
+import com.mygdx.game.managers.EntityFactory;
+import com.mygdx.game.systems.BulletSystem;
+import com.mygdx.game.systems.PlayerSystem;
 import com.mygdx.game.systems.RenderSystem;
 
 public class GameWorld {
+
     private static final float FOV = 67F;
     private ModelBatch modelBatch;
     private Environment environment;
     private PerspectiveCamera perspectiveCamera;
 
     private Engine engine;
+    private Entity character;
+    public BulletSystem bulletSystem;
+    public ModelBuilder modelBuilder = new ModelBuilder();
+
+
+    Model wallHorizontal = modelBuilder.createBox(40, 20, 1,
+            new Material(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.RED),
+                    FloatAttribute.createShininess(16f)),
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+    Model wallVertical = modelBuilder.createBox(1, 20, 40,
+            new Material(ColorAttribute.createDiffuse(Color.GREEN), ColorAttribute.createSpecular(Color.WHITE),
+                    FloatAttribute.createShininess(16f)),
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+    Model groundModel = modelBuilder.createBox(40, 1, 40,
+            new Material(ColorAttribute.createDiffuse(Color.YELLOW), ColorAttribute.createSpecular(Color.BLUE),
+                    FloatAttribute.createShininess(16f)),
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+
+//    Model box = modelBuilder.createBox(5, 5, 5, new Material(ColorAttribute.createDiffuse(Color.WHITE),
+//                    ColorAttribute.createSpecular(Color.RED), FloatAttribute.createShininess(16f)),
+//            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
     public GameWorld() {
+        Bullet.init();
         initEnvironment();
         initModelBatch();
         initPersCamera();
+//        addSystems(gameUI);
+        addSystems();
+        addEntities();
+    }
 
+    private void addEntities(){
+        createGround();
+        createPlayer(5, 3, 5);
+    }
+
+    private void createPlayer(float x, float y, float z) {
+        character = EntityFactory.createPlayer(bulletSystem, x, y, z);
+        engine.addEntity(character);
+    }
+
+    private void createGround(){
+        engine.addEntity(EntityFactory.createStaticEntity(groundModel, 0, 0, 0));
+        engine.addEntity(EntityFactory.createStaticEntity(wallHorizontal, 0, 10, -20));
+        engine.addEntity(EntityFactory.createStaticEntity(wallHorizontal, 0, 10, 20));
+        engine.addEntity(EntityFactory.createStaticEntity(wallVertical, 20, 10, 0));
+        engine.addEntity(EntityFactory.createStaticEntity(wallVertical, -20, 10, 0));
+//        engine.addEntity(EntityFactory.createStaticEntity(box, 10, 10, 10));
+    }
+
+    private void addSystems(){
         engine = new Engine();
-
-
-        ModelBuilder modelBuilder = new ModelBuilder();
-        Material boxMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE),
-                ColorAttribute.createSpecular(Color.RED), FloatAttribute.createShininess(16f));
-        Model box = modelBuilder.createBox(5, 5, 5, boxMaterial,
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-
-        Entity entity = new Entity();
-        entity.add(new ModelComponent(box, 10, 10, 10));
-        engine.addEntity(entity);
         engine.addSystem(new RenderSystem(modelBatch, environment));
+        engine.addSystem(bulletSystem = new BulletSystem());
+        engine.addSystem(new PlayerSystem(this, perspectiveCamera));
+    }
+
+    public void render(float delta){
+        renderWorld(delta);
+    }
+
+    protected void renderWorld(float delta){
+        modelBatch.begin(perspectiveCamera);
+        engine.update(delta);
+        modelBatch.end();
+    }
+
+    public void dispose() {
+        bulletSystem.collisionWorld.removeAction(character.getComponent(CharacterComponent.class).characterController);
+        bulletSystem.collisionWorld.removeCollisionObject(character.getComponent(CharacterComponent.class).ghostObject);
+        bulletSystem.dispose();
+
+        bulletSystem = null;
+
+        wallHorizontal.dispose();
+        wallVertical.dispose();
+        groundModel.dispose();
+        modelBatch.dispose();
+
+        modelBatch = null;
+
+        character.getComponent(CharacterComponent.class).characterController.dispose();
+        character.getComponent(CharacterComponent.class).ghostObject.dispose();
+        character.getComponent(CharacterComponent.class).ghostShape.dispose();
     }
 
     private void initPersCamera(){
         perspectiveCamera = new PerspectiveCamera(FOV, Core2.VIRTUAL_WIDTH, Core2.VIRTUAL_HEIGHT);
-        perspectiveCamera.position.set(30f, 40f, 30f);
-        perspectiveCamera.lookAt(0f, 0f, 0f);
-        perspectiveCamera.near = 1f;
-        perspectiveCamera.far = 300f;
-        perspectiveCamera.update();
+//        perspectiveCamera.position.set(30f, 40f, 30f);
+//        perspectiveCamera.lookAt(0f, 0f, 0f);
+//        perspectiveCamera.near = 1f;
+//        perspectiveCamera.far = 300f;
+//        perspectiveCamera.update();
     }
 
     private void initEnvironment() {
@@ -61,20 +133,8 @@ public class GameWorld {
         modelBatch = new ModelBatch();
     }
 
-    /*The ModelBatch is one of the objects, which require
-    * disposing, hence we add it to the dispose function. */
-    public void dispose() {
-        modelBatch.dispose();
-    }
-    /*With the camera set we can now fill in the resize function as well*/
     public void resize(int width, int height) {
         perspectiveCamera.viewportHeight = height;
         perspectiveCamera.viewportWidth = width;
     }
-    //and set up the render function with the modelbatch
-    public void render(float delta){
-        modelBatch.begin(perspectiveCamera);
-        modelBatch.end();
-    }
-
 }
