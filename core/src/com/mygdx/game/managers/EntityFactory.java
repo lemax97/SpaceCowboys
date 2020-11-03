@@ -17,10 +17,7 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.mygdx.game.bullet.MotionState;
-import com.mygdx.game.components.BulletComponent;
-import com.mygdx.game.components.CharacterComponent;
-import com.mygdx.game.components.ModelComponent;
-import com.mygdx.game.components.PlayerComponent;
+import com.mygdx.game.components.*;
 import com.mygdx.game.systems.BulletSystem;
 
 public class EntityFactory {
@@ -65,6 +62,13 @@ public class EntityFactory {
     public static Entity createPlayer(BulletSystem bulletSystem, float x, float y, float z){
         Entity entity = createCharacter(bulletSystem, x, y, z);
         entity.add(new PlayerComponent());
+        return entity;
+    }
+
+    public static Entity createEnemy(BulletSystem bulletSystem, float x, float y, float z){
+        Entity entity = createCharacter(bulletSystem, x, y, z);
+        entity.add(new EnemyComponent(EnemyComponent.STATE.HUNTING));
+        entity.add(new StatusComponent());
         return entity;
     }
 
