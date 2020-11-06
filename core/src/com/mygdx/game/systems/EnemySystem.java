@@ -2,6 +2,7 @@ package com.mygdx.game.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.GameWorld;
@@ -34,7 +35,7 @@ public class EnemySystem extends EntitySystem implements EntityListener {
 
     @Override
     public void entityAdded(Entity entity) {
-
+        player = entity;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class EnemySystem extends EntitySystem implements EntityListener {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float delta) {
         if (entities.size() < 1) {
             Random random = new Random();
             engine.addEntity(EntityFactory.createEnemy
@@ -69,6 +70,22 @@ public class EnemySystem extends EntitySystem implements EntityListener {
 
             // Calculate the transforms
             Quaternion rot = quat.setFromAxis(0, 1, 0, (float) Math.toDegrees(theta) + 90);
+
+            // Walk
+            Matrix4 ghost = new Matrix4();
+            Vector3 translation = new Vector3();
+            cm.get(e).ghostObject.getWorldTransform(ghost);
+            ghost.getTranslation(translation);
+            mod.instance.transform.set(translation.x, translation.y, translation.z,
+                    rot.x, rot.y, rot.z, rot.w);
+
+            cm.get(e).characterDirection.set(-1, 0, 0).rot(mod.instance.transform);
+            cm.get(e).walkDirection.set(0,0,0);
+            cm.get(e).walkDirection.add(cm.get(e).characterDirection);
+            cm.get(e).walkDirection.scl(3f * delta);
+            cm.get(e).characterController.setWalkDirection(cm.get(e).walkDirection);
         }
+
+
     }
 }

@@ -57,23 +57,19 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         //Move
         characterComponent.characterDirection.set(-1, 0, 0).rot(modelComponent.instance.transform).nor();
         characterComponent.walkDirection.set(0,0,0);
-        if (Gdx.input.isKeyPressed(Input.Keys.W))
-            characterComponent.walkDirection.add(camera.direction);
-        if (Gdx.input.isKeyPressed(Input.Keys.S))
-            characterComponent.walkDirection.sub(camera.direction);
-        if (Gdx.input.isKeyPressed(Input.Keys.A))
-//            tmp.set(camera.direction).crs(camera.up).scl(-1);
-            tmp.set(camera.direction).crs(camera.up).scl(-1);
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-            tmp.set(camera.direction).crs(camera.up);
-//            tmp.set(camera.direction).crs(camera.up);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) characterComponent.walkDirection.add(camera.direction);
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) characterComponent.walkDirection.sub(camera.direction);
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) tmp.set(camera.direction).crs(camera.up).scl(-1);
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) tmp.set(camera.direction).crs(camera.up);
+
         characterComponent.walkDirection.add(tmp);
         characterComponent.walkDirection.scl(10f * delta);
         characterComponent.characterController.setWalkDirection(characterComponent.walkDirection);
+
         Matrix4 ghost = new Matrix4();
         Vector3 translation = new Vector3();
         characterComponent.ghostObject.getWorldTransform(ghost);
-
         ghost.getTranslation(translation);
         modelComponent.instance.transform.set(translation.x, translation.y, translation.z,
                 camera.direction.x, camera.direction.y, camera.direction.z, 0);
