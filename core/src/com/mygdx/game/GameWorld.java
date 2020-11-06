@@ -13,9 +13,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.mygdx.game.UI.GameUI;
 import com.mygdx.game.components.CharacterComponent;
-import com.mygdx.game.components.ModelComponent;
 import com.mygdx.game.managers.EntityFactory;
+import com.mygdx.game.old.Core2;
 import com.mygdx.game.systems.*;
 
 public class GameWorld {
@@ -48,7 +49,7 @@ public class GameWorld {
 //                    ColorAttribute.createSpecular(Color.RED), FloatAttribute.createShininess(16f)),
 //            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
-    public GameWorld() {
+    public GameWorld(GameUI gameUI) {
         Bullet.init();
         initEnvironment();
         initModelBatch();
@@ -116,7 +117,7 @@ public class GameWorld {
     }
 
     private void initPersCamera(){
-        perspectiveCamera = new PerspectiveCamera(FOV, Core2.VIRTUAL_WIDTH, Core2.VIRTUAL_HEIGHT);
+        perspectiveCamera = new PerspectiveCamera(FOV, com.mygdx.game.old.Core2.VIRTUAL_WIDTH, Core2.VIRTUAL_HEIGHT);
 //        perspectiveCamera.position.set(30f, 40f, 30f);
 //        perspectiveCamera.lookAt(0f, 0f, 0f);
 //        perspectiveCamera.near = 1f;

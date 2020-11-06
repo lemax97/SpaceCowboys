@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.old;
 
 
 import com.badlogic.ashley.core.Engine;
@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.mygdx.game.components.ModelComponent;
+import com.mygdx.game.old.Core2;
 import com.mygdx.game.systems.RenderSystem;
 
 public class GameWorldOld {
@@ -46,7 +47,7 @@ public class GameWorldOld {
     }
 
     private void initPersCamera(){
-        perspectiveCamera = new PerspectiveCamera(FOV, Core2.VIRTUAL_WIDTH, Core2.VIRTUAL_HEIGHT);
+        perspectiveCamera = new PerspectiveCamera(FOV, com.mygdx.game.old.Core2.VIRTUAL_WIDTH, Core2.VIRTUAL_HEIGHT);
         perspectiveCamera.position.set(30f, 40f, 30f);
         perspectiveCamera.lookAt(0f, 0f, 0f);
         perspectiveCamera.near = 1f;
