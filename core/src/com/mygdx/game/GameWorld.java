@@ -16,9 +16,7 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.mygdx.game.components.CharacterComponent;
 import com.mygdx.game.components.ModelComponent;
 import com.mygdx.game.managers.EntityFactory;
-import com.mygdx.game.systems.BulletSystem;
-import com.mygdx.game.systems.PlayerSystem;
-import com.mygdx.game.systems.RenderSystem;
+import com.mygdx.game.systems.*;
 
 public class GameWorld {
 
@@ -79,11 +77,13 @@ public class GameWorld {
 //        engine.addEntity(EntityFactory.createStaticEntity(box, 10, 10, 10));
     }
 
-    private void addSystems(){
+    private void addSystems(/*GameUI gameUI*/){
         engine = new Engine();
         engine.addSystem(new RenderSystem(modelBatch, environment));
         engine.addSystem(bulletSystem = new BulletSystem());
         engine.addSystem(new PlayerSystem(this, perspectiveCamera));
+        engine.addSystem(new EnemySystem(this));
+        engine.addSystem(new StatusSystem(this));
     }
 
     public void render(float delta){
@@ -136,5 +136,10 @@ public class GameWorld {
     public void resize(int width, int height) {
         perspectiveCamera.viewportHeight = height;
         perspectiveCamera.viewportWidth = width;
+    }
+
+    public void remove(Entity entity) {
+        engine.removeEntity(entity);
+        bulletSystem.removeBody(entity);
     }
 }
