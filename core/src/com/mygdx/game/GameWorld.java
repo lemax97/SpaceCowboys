@@ -54,8 +54,7 @@ public class GameWorld {
         initEnvironment();
         initModelBatch();
         initPersCamera();
-//        addSystems(gameUI);
-        addSystems();
+        addSystems(gameUI);
         addEntities();
     }
 
@@ -78,11 +77,11 @@ public class GameWorld {
 //        engine.addEntity(EntityFactory.createStaticEntity(box, 10, 10, 10));
     }
 
-    private void addSystems(/*GameUI gameUI*/){
+    private void addSystems(GameUI gameUI){
         engine = new Engine();
         engine.addSystem(new RenderSystem(modelBatch, environment));
         engine.addSystem(bulletSystem = new BulletSystem());
-        engine.addSystem(new PlayerSystem(this, perspectiveCamera));
+        engine.addSystem(new PlayerSystem(perspectiveCamera, gameUI, engine));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new StatusSystem(this));
     }

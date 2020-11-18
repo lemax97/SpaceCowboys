@@ -18,7 +18,7 @@ public class GameScreen implements Screen {
         gameWorld = new GameWorld(gameUI);
         Settings.Paused = false;
         Gdx.input.setInputProcessor(gameUI.stage);
-        Gdx.input.setCursorCatched(false);
+        Gdx.input.setCursorCatched(true);
     }
 
 

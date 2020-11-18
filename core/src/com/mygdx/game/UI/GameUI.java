@@ -3,6 +3,7 @@ package com.mygdx.game.UI;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Core;
+import com.mygdx.game.widgets.*;
 
 public class GameUI {
     private Core game;
@@ -34,7 +35,8 @@ public class GameUI {
         scoreWidget.setSize(140, 25);
         scoreWidget.setPosition(0, Core.VIRTUAL_HEIGHT  - scoreWidget.getHeight() );
         pauseWidget.setSize(64, 64);
-        pauseWidget.setPosition(Core.VIRTUAL_WIDTH - pauseWidget.getWidth, Core.VIRTUAL_HEIGHT - pauseWidget.getHeight);
+        pauseWidget.setPosition(Core.VIRTUAL_WIDTH - pauseWidget.getWidth(),
+                Core.VIRTUAL_HEIGHT - pauseWidget.getHeight());
         gameOverWidget.setSize(280, 100);
         gameOverWidget.setPosition(Core.VIRTUAL_WIDTH / 2 - 280 / 2, Core.VIRTUAL_HEIGHT / 2);
         crosshairWidget.setPosition(Core.VIRTUAL_WIDTH / 2 - 16, Core.VIRTUAL_HEIGHT / 2 - 16);

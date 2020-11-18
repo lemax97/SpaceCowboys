@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.mygdx.game.GameWorld;
+import com.mygdx.game.UI.GameUI;
 import com.mygdx.game.components.*;
 
 
@@ -17,6 +18,8 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
 
     private Entity player;
     private PlayerComponent playerComponent;
+    private GameUI gameUI;
+
     private CharacterComponent characterComponent;
     private ModelComponent modelComponent;
     private final Vector3 tmp = new Vector3();
@@ -27,10 +30,10 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
     Vector3 rayFrom = new Vector3();
     Vector3 rayTo = new Vector3();
 
-    public PlayerSystem(GameWorld gameWorld, Camera camera) {
+    public PlayerSystem(Camera camera, GameUI gameUI, Engine engine) {
         this.camera = camera;
-        this.gameWorld = gameWorld;
         rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
+        this.gameUI = gameUI;
     }
 
     @Override
@@ -50,6 +53,11 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
     public void update(float delta) {
         if (player == null) return;
         updateMovement(delta);
+        updateStatus();
+    }
+
+    private void updateStatus(){
+        gameUI.healthWidget.setValue(playerComponent.health);
     }
 
     private void updateMovement(float delta) {
@@ -105,7 +113,10 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
             if (((Entity)obj.userData).getComponent(EnemyComponent.class) != null ) {
 
                 ((Entity)obj.userData).getComponent(StatusComponent.class).alive = false;
+                PlayerComponent.score += 100;
             }
         }
     }
+
+
 }

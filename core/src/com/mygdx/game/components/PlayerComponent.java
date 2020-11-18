@@ -11,7 +11,7 @@ public class PlayerComponent implements Component {
     public PlayerComponent(){
         energy = 100;
         oxygen = 100;
-        health = 100;
+        health = 80;
         score = 0;
     }
 }
