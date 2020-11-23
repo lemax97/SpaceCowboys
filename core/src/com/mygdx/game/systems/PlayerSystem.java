@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.mygdx.game.GameWorld;
+import com.mygdx.game.Settings;
 import com.mygdx.game.UI.GameUI;
 import com.mygdx.game.components.*;
 
@@ -54,6 +55,14 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         if (player == null) return;
         updateMovement(delta);
         updateStatus();
+        checkGameOver();
+    }
+
+    private void checkGameOver() {
+        if (playerComponent.health <= 0 && !Settings.Paused) {
+            Settings.Paused = true;
+            gameUI.gameOverWidget.gameOver();
+        }
     }
 
     private void updateStatus(){

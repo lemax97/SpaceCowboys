@@ -5,6 +5,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.mygdx.game.Screens.MainMenuScreen;
 
 public class Core extends ApplicationAdapter {
 
@@ -17,7 +18,8 @@ public class Core extends ApplicationAdapter {
         super.create();
 //        Gdx.input.setCatchBackKey(true);
         new Assets();
-        setScreen(new GameScreen(this));
+//        setScreen(new GameScreen(this));
+        setScreen(new MainMenuScreen(this));
     }
 
     @Override
