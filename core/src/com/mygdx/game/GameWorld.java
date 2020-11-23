@@ -88,6 +88,29 @@ public class GameWorld {
 
     public void render(float delta){
         renderWorld(delta);
+        checkPause();
+    }
+
+    private void checkPause() {
+
+        if (Settings.Paused) {
+//            movementSystem.setProcessing(false);
+//            playerSystem.setProcessing(false);
+//            collisionSystem.setProcessing(false);
+            engine.getSystem(PlayerSystem.class).setProcessing(false);
+            engine.getSystem(EnemySystem.class).setProcessing(false);
+            engine.getSystem(StatusSystem.class).setProcessing(false);
+            engine.getSystem(BulletSystem.class).setProcessing(false);
+        }
+        else {
+//            movementSystem.setProcessing(true);
+//            playerSystem.setProcessing(true);
+//            collisionSystem.setProcessing(true);
+            engine.getSystem(PlayerSystem.class).setProcessing(true);
+            engine.getSystem(EnemySystem.class).setProcessing(true);
+            engine.getSystem(StatusSystem.class).setProcessing(true);
+            engine.getSystem(BulletSystem.class).setProcessing(true);
+        }
     }
 
     protected void renderWorld(float delta){
