@@ -29,8 +29,8 @@ public class MainMenuScreen implements Screen {
     }
 
     private void setWidgets() {
-        backgroundImage     = new Image(new Texture(Gdx.files.internal("backgroundMN.png")));
-        titleImage          = new Image(new Texture(Gdx.files.internal("title.png")));
+        backgroundImage     = new Image(new Texture(Gdx.files.internal("data/backgroundMN.png")));
+        titleImage          = new Image(new Texture(Gdx.files.internal("data/title.png")));
         playButton          = new TextButton("Play", Assets.skin);
         leaderboardButton   = new TextButton("Leaderboards", Assets.skin);
         quitButton          = new TextButton("Quit", Assets.skin);
