@@ -18,7 +18,7 @@ public class Core extends ApplicationAdapter {
         super.create();
 //        Gdx.input.setCatchBackKey(true);
         new Assets();
-//        setScreen(new GameScreen(this));
+        new Settings().load();
         setScreen(new MainMenuScreen(this));
     }
 
@@ -55,5 +55,6 @@ public class Core extends ApplicationAdapter {
     @Override
     public void dispose() {
         Assets.dispose();
+        Settings.save();
     }
 }
