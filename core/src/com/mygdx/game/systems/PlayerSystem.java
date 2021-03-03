@@ -18,6 +18,7 @@ import com.mygdx.game.components.*;
 public class PlayerSystem extends EntitySystem implements EntityListener {
 
     private Entity player;
+    public Entity gun;
     private PlayerComponent playerComponent;
     private GameUI gameUI;
 
@@ -125,6 +126,8 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
                 PlayerComponent.score += 100;
             }
         }
+
+        gun.getComponent(AnimationComponent.class).animate("Armature|shoot", 1, 3);
     }
 
 
