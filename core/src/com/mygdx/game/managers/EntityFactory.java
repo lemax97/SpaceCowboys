@@ -24,13 +24,15 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.mygdx.game.bullet.MotionState;
 import com.mygdx.game.components.*;
 import com.mygdx.game.systems.BulletSystem;
+import com.mygdx.game.systems.RenderSystem;
 
 public class EntityFactory {
 
     private static ModelBuilder modelBuilder;
     private static Texture playerTexture;
     private static Model playerModel;
-    private static Model boxModel;
+    private static Model enemyModel;
+    public static RenderSystem renderSystem;
 
     static {
         modelBuilder = new ModelBuilder();
@@ -81,7 +83,7 @@ public class EntityFactory {
 
     public static Entity loadGun(float x, float y, float z){
         ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
-        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/GUNMODEL.g3dj"));
+        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
         Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
         ModelComponent modelComponent = new ModelComponent(model, x, y, z);
         modelComponent.instance.transform.rotate(0, 1, 0, 180);

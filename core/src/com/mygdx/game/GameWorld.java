@@ -93,7 +93,8 @@ public class GameWorld {
 
     private void addSystems(GameUI gameUI){
         engine = new Engine();
-        engine.addSystem(new RenderSystem());
+        engine.addSystem(renderSystem = new RenderSystem());
+        EntityFactory.renderSystem = renderSystem;
         engine.addSystem(bulletSystem = new BulletSystem());
         engine.addSystem(playerSystem = new PlayerSystem(this, renderSystem.perspectiveCamera, gameUI));
         engine.addSystem(new EnemySystem(this));

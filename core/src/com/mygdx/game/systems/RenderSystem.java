@@ -35,11 +35,10 @@ public class RenderSystem extends EntitySystem {
         gunCamera.far = 100f;
     }
 
-//    public void addedToEngine(Engine e){
-//        entities = e.getEntitiesFor(Family.all(ModelComponent.class).get());
-//    }
-
-
+    public void addedToEngine(Engine engine){
+        //get a list of all the entities containing 'ModelComponent'
+        entities = engine.getEntitiesFor(Family.all(ModelComponent.class).get());
+    }
 
     @Override
     public void update(float deltaTime) {
