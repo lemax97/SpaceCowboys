@@ -95,7 +95,7 @@ public class GameWorld {
         engine = new Engine();
         engine.addSystem(new RenderSystem());
         engine.addSystem(bulletSystem = new BulletSystem());
-        engine.addSystem(playerSystem = new PlayerSystem(this, gameUI, renderSystem.perspectiveCamera));
+        engine.addSystem(playerSystem = new PlayerSystem(this, renderSystem.perspectiveCamera, gameUI));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new StatusSystem(this));
         if (debug) bulletSystem.collisionWorld.setDebugDrawer(this.debugDrawer);

@@ -43,10 +43,10 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
-        drawModels();
+        drawModels(deltaTime);
     }
 
-    private void drawModels() {
+    private void drawModels(float delta) {
         batch.begin(perspectiveCamera);
         for (int i = 0; i < entities.size(); i++) {
             if (entities.get(i).getComponent(GunComponent.class) == null) {
@@ -55,7 +55,7 @@ public class RenderSystem extends EntitySystem {
             }
         }
         batch.end();
-        drawGun();
+        drawGun(delta);
     }
 
     private void drawGun(float delta){
@@ -76,6 +76,5 @@ public class RenderSystem extends EntitySystem {
     public void dispose() {
         batch.dispose();
         batch = null;
-
     }
 }

@@ -32,10 +32,11 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
     Vector3 rayFrom = new Vector3();
     Vector3 rayTo = new Vector3();
 
-    public PlayerSystem(Camera camera, GameUI gameUI, Engine engine) {
+    public PlayerSystem(GameWorld gameWorld, Camera camera, GameUI gameUI) {
+        this.gameWorld= gameWorld;
         this.camera = camera;
-        rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
         this.gameUI = gameUI;
+        rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
     }
 
     @Override
