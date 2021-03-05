@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.mygdx.game.Core;
+import com.mygdx.game.Settings;
 import com.mygdx.game.components.AnimationComponent;
 import com.mygdx.game.components.GunComponent;
 import com.mygdx.game.components.ModelComponent;
@@ -22,19 +23,39 @@ public class RenderSystem extends EntitySystem {
     private Environment environment;
 
     private static final float FOV = 67F;
-    public PerspectiveCamera perspectiveCamera, gunCamera;
+    public static PerspectiveCamera perspectiveCamera =
+            new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
+    public PerspectiveCamera gunCamera;
     public Entity gun;
 
     public RenderSystem(){
-        perspectiveCamera = new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
-        perspectiveCamera.far = 10000f;
+        setPerspectiveCamera();
+
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1));
+
+
         batch = new ModelBatch();
         gunCamera = new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
         gunCamera.far = 100f;
     }
 
+    private void setPerspectiveCamera(){
+        perspectiveCamera.far = 10000f;
+        PerspectiveCamera tempCam = new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
+
+        perspectiveCamera.up.set(tempCam.up);
+        perspectiveCamera.position.set(tempCam.position);
+        perspectiveCamera.view.set(tempCam.view);
+        perspectiveCamera.combined.set(tempCam.combined);
+        perspectiveCamera.direction.set(tempCam.direction);
+        perspectiveCamera.invProjectionView.set(tempCam.invProjectionView);
+        perspectiveCamera.near = tempCam.near;
+        perspectiveCamera.projection.set(tempCam.projection);
+
+    }
+
+    @Override
     public void addedToEngine(Engine engine){
         //get a list of all the entities containing 'ModelComponent'
         entities = engine.getEntitiesFor(Family.all(ModelComponent.class).get());
@@ -47,17 +68,29 @@ public class RenderSystem extends EntitySystem {
 
     private void drawModels(float delta) {
         batch.begin(perspectiveCamera);
+//        for (int i = 0; i < entities.size(); i++) {
+//            if (entities.get(i).getComponent(GunComponent.class) == null) {
+//                ModelComponent mod = entities.get(i).getComponent(ModelComponent.class);
+//                batch.render(mod.instance, environment);
+//            }
+//        }
         for (int i = 0; i < entities.size(); i++) {
             if (entities.get(i).getComponent(GunComponent.class) == null) {
                 ModelComponent mod = entities.get(i).getComponent(ModelComponent.class);
                 batch.render(mod.instance, environment);
+                if (entities.get(i).getComponent(AnimationComponent.class) != null && !Settings.Paused) {
+                    entities.get(i).getComponent(AnimationComponent.class).update(delta);
+                }
             }
         }
         batch.end();
+//        renderParticleEffects();
         drawGun(delta);
     }
 
     private void drawGun(float delta){
+        // clear the depth buffer; this is needed in order to display the gun with a different camera.
+
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin(gunCamera);
         batch.render(gun.getComponent(ModelComponent.class).instance);
