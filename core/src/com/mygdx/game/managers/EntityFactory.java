@@ -82,17 +82,6 @@ public class EntityFactory {
     }
 
     public static Entity loadGun(float x, float y, float z){
-//        ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
-//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
-//        Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
-//        ModelComponent modelComponent = new ModelComponent(model, x, y, z);
-//        modelComponent.instance.transform.rotate(0, 1, 0, 180);
-//        Entity gunEntity = new Entity();
-//        gunEntity.add(modelComponent);
-//        gunEntity.add(new GunComponent());
-//        gunEntity.add(new AnimationComponent(modelComponent.instance));
-//        return gunEntity;
-
         ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
         ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
         Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
@@ -106,6 +95,20 @@ public class EntityFactory {
         gunEntity.add(new GunComponent());
         gunEntity.add(new AnimationComponent(modelComponent.instance));
         return gunEntity;
+
+//        ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
+//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
+//        Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
+//        ModelComponent modelComponent = new ModelComponent(model, x, y, z);
+//        modelComponent.instance.transform.rotate(0, 1, 0, 180);
+////        modelComponent.instance.transform.translate(-2.5f, -2.5f, 4);
+////        modelComponent.instance.transform.scale(0.008f, 0.008f, 0.008f);
+//        modelComponent.instance.transform.scale(0.02f, 0.02f, 0.02f);
+//        Entity gunEntity = new Entity();
+//        gunEntity.add(modelComponent);
+//        gunEntity.add(new GunComponent());
+//        gunEntity.add(new AnimationComponent(modelComponent.instance));
+//        return gunEntity;
     }
 
     public static Entity createStaticEntity(Model model, float x, float y, float z) {
