@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -86,29 +87,15 @@ public class EntityFactory {
         ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
         Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
         ModelComponent modelComponent = new ModelComponent(model, x, y, z);
+        //to correctly view the model on screen it needs to transform
         modelComponent.instance.transform.rotate(0, 1, 0, 180);
         modelComponent.instance.transform.translate(-2.5f, -2.5f, 4);
         modelComponent.instance.transform.scale(0.008f, 0.008f, 0.008f);
-//        modelComponent.instance.transform.scale(0.02f, 0.02f, 0.02f);
         Entity gunEntity = new Entity();
         gunEntity.add(modelComponent);
         gunEntity.add(new GunComponent());
         gunEntity.add(new AnimationComponent(modelComponent.instance));
         return gunEntity;
-
-//        ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
-//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/gunmodel.g3dj"));
-//        Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
-//        ModelComponent modelComponent = new ModelComponent(model, x, y, z);
-//        modelComponent.instance.transform.rotate(0, 1, 0, 180);
-////        modelComponent.instance.transform.translate(-2.5f, -2.5f, 4);
-////        modelComponent.instance.transform.scale(0.008f, 0.008f, 0.008f);
-//        modelComponent.instance.transform.scale(0.02f, 0.02f, 0.02f);
-//        Entity gunEntity = new Entity();
-//        gunEntity.add(modelComponent);
-//        gunEntity.add(new GunComponent());
-//        gunEntity.add(new AnimationComponent(modelComponent.instance));
-//        return gunEntity;
     }
 
     public static Entity createStaticEntity(Model model, float x, float y, float z) {
@@ -128,6 +115,25 @@ public class EntityFactory {
         bulletComponent.body.userData = entity;
         bulletComponent.motionState = new MotionState(modelComponent.instance.transform);
         ((btRigidBody)bulletComponent.body).setMotionState(bulletComponent.motionState);
+        entity.add(bulletComponent);
+        return entity;
+    }
+
+    public static Entity loadScene(int x, int y, int z) {
+        Entity entity = new Entity();
+        ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
+//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena2.g3dj"));
+        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena.g3dj"));
+        Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
+        ModelComponent modelComponent = new ModelComponent(model, x, y, z);
+        entity.add(modelComponent);
+        BulletComponent bulletComponent = new BulletComponent();
+        btCollisionShape shape = Bullet.obtainStaticNodeShape(model.nodes);
+        bulletComponent.bodyInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
+        bulletComponent.body = new btRigidBody(bulletComponent.bodyInfo);
+        bulletComponent.body.userData = entity;
+        bulletComponent.motionState = new MotionState(modelComponent.instance.transform);
+        ((btRigidBody) bulletComponent.body).setMotionState(bulletComponent.motionState);
         entity.add(bulletComponent);
         return entity;
     }

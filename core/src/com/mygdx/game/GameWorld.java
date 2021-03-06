@@ -31,7 +31,7 @@ public class GameWorld {
 //    public ModelBuilder modelBuilder = new ModelBuilder();
 
     //new code
-    private static final boolean debug = false;
+    private static final boolean debug = true;
     private DebugDrawer debugDrawer;
     private Engine engine;
     private Entity character, gun;
@@ -70,9 +70,15 @@ public class GameWorld {
     }
 
     private void addEntities(){
-        createGround();
-        createPlayer(5, 3, 5);
-        engine.addEntity(EntityFactory.createEnemy(bulletSystem, 5, 3, 5));
+//        createGround();
+//        createPlayer(5, 3, 5);
+//        engine.addEntity(EntityFactory.createEnemy(bulletSystem, 5, 3, 5));
+        loadLevel();
+        createPlayer(0, 6, 0);
+    }
+
+    private void loadLevel() {
+        engine.addEntity(EntityFactory.loadScene(0, 0, 0));
     }
 
     private void createPlayer(float x, float y, float z) {
