@@ -17,6 +17,7 @@ import com.mygdx.game.components.*;
 
 public class PlayerSystem extends EntitySystem implements EntityListener {
 
+    public static Entity dome;
     private Entity player;
     public Entity gun;
     private PlayerComponent playerComponent;
@@ -101,6 +102,8 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         camera.position.set(translation.x, translation.y, translation.z);
         camera.update(true);
 
+        dome.getComponent(ModelComponent.class).instance.transform.setToTranslation(translation.x, translation.y, translation.z);
+
         if (Gdx.input.justTouched()) fire();
     }
 
@@ -121,10 +124,13 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         gameWorld.bulletSystem.collisionWorld.rayTest(rayFrom, rayTo, rayTestCB);
         if (rayTestCB.hasHit()) {
             final btCollisionObject obj = rayTestCB.getCollisionObject();
-            if (((Entity)obj.userData).getComponent(EnemyComponent.class) != null ) {
+            if (((Entity) obj.userData).getComponent(EnemyComponent.class) != null ) {
+                if (((Entity) obj.userData).getComponent(StatusComponent.class).alive) {
+                    ((Entity) obj.userData).getComponent(StatusComponent.class).setAlive(false);
+                    PlayerComponent.score += 100;
+                }
+//                ((Entity)obj.userData).getComponent(StatusComponent.class).alive = false;
 
-                ((Entity)obj.userData).getComponent(StatusComponent.class).alive = false;
-                PlayerComponent.score += 100;
             }
         }
 

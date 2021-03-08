@@ -17,6 +17,10 @@ public class AnimationComponent implements Component {
         animationController.animate(id, loops, speed, null, 0);
     }
 
+    public void animate(String id, float offset, float duration, int loopCount, int speed){
+        animationController.animate(id, offset, duration, loopCount, speed, null, 0);
+    }
+
     public void update(float delta) {
         animationController.update(delta);
     }

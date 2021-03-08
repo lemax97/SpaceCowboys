@@ -14,6 +14,8 @@ import com.mygdx.game.managers.EntityFactory;
 
 import java.util.Random;
 
+import static com.badlogic.gdx.math.MathUtils.random;
+
 public class EnemySystem extends EntitySystem implements EntityListener {
 
     private ImmutableArray<Entity> entities;
@@ -25,6 +27,9 @@ public class EnemySystem extends EntitySystem implements EntityListener {
     public EnemySystem(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
     }
+
+    private float[] xSpawns = {12, -12, 40, -40};
+    private float[] zSpawns = {-40, 40, -12, 12};
 
     @Override
     public void addedToEngine(Engine e) {
@@ -45,12 +50,16 @@ public class EnemySystem extends EntitySystem implements EntityListener {
 
     @Override
     public void update(float delta) {
-        if (entities.size() < 1) {
-            Random random = new Random();
-            engine.addEntity(EntityFactory.createEnemy
-            (gameWorld.bulletSystem,
-            random.nextInt(40) - 20, 10, random.nextInt(40) - 20));
-        }
+//        if (entities.size() < 1) {
+//            Random random = new Random();
+//            engine.addEntity(EntityFactory.createEnemy
+//            (gameWorld.bulletSystem,
+//            random.nextInt(40) - 20, 10, random.nextInt(40) - 20));
+//        }
+
+        if (entities.size() < 1) spawnEnemy(getRandomSpawnIndex());
+
+
 
         for (Entity e : entities) {
             ModelComponent mod =
@@ -88,4 +97,16 @@ public class EnemySystem extends EntitySystem implements EntityListener {
 
 
     }
+
+    public int getRandomSpawnIndex() {
+        return random.nextInt(xSpawns.length);
+    }
+
+    private void spawnEnemy(int randomSpawnIndex){
+
+        engine.addEntity(EntityFactory.createEnemy(gameWorld.bulletSystem, xSpawns[randomSpawnIndex], 33, zSpawns[randomSpawnIndex]));
+//        engine.addEntity(EntityFactory.createEnemy(gameWorld.bulletSystem,random.nextInt(40) - 20, 10, random.nextInt(40) - 20));
+    }
+
+
 }

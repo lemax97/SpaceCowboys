@@ -19,19 +19,7 @@ import com.mygdx.game.systems.*;
 
 public class GameWorld {
 
-    //old code
-//    private static final float FOV = 67F;
-//    private ModelBatch modelBatch;
-//    private Environment environment;
-//    private PerspectiveCamera perspectiveCamera;
-
-//    private Engine engine;
-//    private Entity character;
-//    public BulletSystem bulletSystem;
-//    public ModelBuilder modelBuilder = new ModelBuilder();
-
-    //new code
-    private static final boolean debug = true;
+    private static final boolean debug = false;
     private DebugDrawer debugDrawer;
     private Engine engine;
     private Entity character, gun;
@@ -39,6 +27,7 @@ public class GameWorld {
     public ModelBuilder modelBuilder = new ModelBuilder();
     public PlayerSystem playerSystem;
     private RenderSystem renderSystem;
+    private Entity dome;
 
     Model wallHorizontal = modelBuilder.createBox(40, 20, 1,
             new Material(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.RED),
@@ -70,15 +59,14 @@ public class GameWorld {
     }
 
     private void addEntities(){
-//        createGround();
-//        createPlayer(5, 3, 5);
-//        engine.addEntity(EntityFactory.createEnemy(bulletSystem, 5, 3, 5));
         loadLevel();
-        createPlayer(0, 6, 0);
+        createPlayer(0, 0, 0);
     }
 
     private void loadLevel() {
         engine.addEntity(EntityFactory.loadScene(0, 0, 0));
+        engine.addEntity(dome = EntityFactory.loadDome(0, 0, 0));
+        PlayerSystem.dome = dome;
     }
 
     private void createPlayer(float x, float y, float z) {
