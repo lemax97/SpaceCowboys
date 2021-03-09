@@ -32,7 +32,6 @@ import com.mygdx.game.systems.BulletSystem;
 import com.mygdx.game.systems.RenderSystem;
 
 public class EntityFactory {
-
     private static ModelBuilder modelBuilder;
     private static Texture playerTexture;
     private static Model playerModel;
@@ -92,7 +91,6 @@ public class EntityFactory {
             enemyModel.calculateTransforms();
 
             //add an attribute to the enemy's material to make it fade out.
-
             enemyModelComponent = new ModelComponent(enemyModel, x, y, z);
 
             Material material = enemyModelComponent.instance.materials.get(0);
@@ -100,29 +98,38 @@ public class EntityFactory {
             material.set(blendingAttribute = new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA));
             enemyModelComponent.blendingAttribute = blendingAttribute;
         }
-
+        Material material = enemyModelComponent.instance.materials.get(0);
         ((BlendingAttribute) enemyModelComponent.instance.materials.get(0).get(BlendingAttribute.Type)).opacity = 1;
 
-        ModelComponent modelComponent = new ModelComponent(enemyModel, x, y, z);
-        modelComponent.instance.transform.rotate(0, 1, 0, 270);
-        entity.add(modelComponent);
+//        ModelComponent modelComponent = new ModelComponent(enemyModel, x, y, z);
+//        modelComponent.instance.transform.rotate(0, 1, 0, 270);
+//        entity.add(modelComponent);
+
+        enemyModelComponent.instance.transform.set(enemyModelComponent.matrix4.setToTranslation(x, y, z));
+        entity.add(enemyModelComponent);
+
         CharacterComponent characterComponent = new CharacterComponent();
         characterComponent.ghostObject = new btPairCachingGhostObject();
-        characterComponent.ghostObject.setWorldTransform(modelComponent.instance.transform);
+//        characterComponent.ghostObject.setWorldTransform(modelComponent.instance.transform);
+        characterComponent.ghostObject.setWorldTransform(enemyModelComponent.instance.transform);
         characterComponent.ghostShape = new btCapsuleShape(2f, 2f);
         characterComponent.ghostObject.setCollisionShape(characterComponent.ghostShape);
         characterComponent.ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
 //      fix gravity error
-        characterComponent.characterController = new btKinematicCharacterController(characterComponent.ghostObject, characterComponent.ghostShape, .35f, new Vector3(0,1f,0));
+        characterComponent.characterController = new btKinematicCharacterController(characterComponent.ghostObject,
+                characterComponent.ghostShape, .35f, new Vector3(0,1f,0));
 
         characterComponent.ghostObject.userData = entity;
         entity.add(characterComponent);
+
         bulletSystem.collisionWorld.addCollisionObject(entity.getComponent(CharacterComponent.class).ghostObject,
                 (short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short)btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         bulletSystem.collisionWorld.addAction(entity.getComponent(CharacterComponent.class).characterController);
         entity.add(new EnemyComponent(EnemyComponent.STATE.HUNTING));
-        AnimationComponent animationComponent = new AnimationComponent(modelComponent.instance);
-        animationComponent.animate(EnemyAnimations.id, EnemyAnimations.offsetRun1, EnemyAnimations.durationRun1, -1, 1);
+//        AnimationComponent animationComponent = new AnimationComponent(modelComponent.instance);
+        AnimationComponent animationComponent = new AnimationComponent(enemyModelComponent.instance);
+        animationComponent.animate(EnemyAnimations.id, EnemyAnimations.offsetRun1,
+                EnemyAnimations.durationRun1, -1, 1);
         entity.add(animationComponent);
         entity.add(new StatusComponent(animationComponent));
         entity.add(new DieParticleComponent(renderSystem.particleSystem));

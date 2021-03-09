@@ -45,8 +45,8 @@ public class RenderSystem extends EntitySystem {
         gunCamera = new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
         gunCamera.far = 100f;
 
-        particleSystem = ParticleSystem.get();
-//        particleSystem = new ParticleSystem();
+//        particleSystem = ParticleSystem.get();
+        particleSystem = new ParticleSystem();
         BillboardParticleBatch billboardParticleBatch = new BillboardParticleBatch();
         billboardParticleBatch.setCamera(perspectiveCamera);
         particleSystem.add(billboardParticleBatch);
