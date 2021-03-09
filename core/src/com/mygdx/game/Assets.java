@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class Assets {
 
     public static Skin skin;
+    public static AssetManager assetManager;
 
     public Assets() {
         skin = new Skin();
@@ -17,9 +19,11 @@ public class Assets {
             skin.addRegions(new TextureAtlas(atlasFile));
         }
         skin.load(fileHandle);
+        assetManager = new AssetManager();
     }
 
     public static void dispose(){
         skin.dispose();
+        assetManager.dispose();
     }
 }

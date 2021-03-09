@@ -64,6 +64,7 @@ public class GameWorld {
     }
 
     private void loadLevel() {
+//        engine.addEntity(EntityFactory.loadScene(0, 0, 0));
         engine.addEntity(EntityFactory.loadScene(0, 0, 0));
         engine.addEntity(dome = EntityFactory.loadDome(0, 0, 0));
         PlayerSystem.dome = dome;

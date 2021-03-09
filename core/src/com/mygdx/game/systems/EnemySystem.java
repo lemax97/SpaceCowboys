@@ -2,14 +2,13 @@ package com.mygdx.game.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.emitters.RegularEmitter;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.GameWorld;
-import com.mygdx.game.components.CharacterComponent;
-import com.mygdx.game.components.EnemyComponent;
-import com.mygdx.game.components.ModelComponent;
-import com.mygdx.game.components.PlayerComponent;
+import com.mygdx.game.components.*;
 import com.mygdx.game.managers.EntityFactory;
 
 import java.util.Random;
@@ -50,31 +49,44 @@ public class EnemySystem extends EntitySystem implements EntityListener {
 
     @Override
     public void update(float delta) {
-//        if (entities.size() < 1) {
-//            Random random = new Random();
-//            engine.addEntity(EntityFactory.createEnemy
-//            (gameWorld.bulletSystem,
-//            random.nextInt(40) - 20, 10, random.nextInt(40) - 20));
-//        }
 
         if (entities.size() < 1) spawnEnemy(getRandomSpawnIndex());
-
-
 
         for (Entity e : entities) {
             ModelComponent mod =
                     e.getComponent(ModelComponent.class);
             ModelComponent playerModel =
                     player.getComponent(ModelComponent.class);
+
+            //if it's not alive, we will update the model component and it will starting fading
+            //out the enemy model
+
+            if (!e.getComponent(StatusComponent.class).alive)
+                mod.update(delta);
+
+            if (!e.getComponent(StatusComponent.class).alive && !e.getComponent(DieParticleComponent.class).used){
+                //it will play the same effect a bunch of times
+                e.getComponent(DieParticleComponent.class).used = true;
+                ParticleEffect effect = e.getComponent(DieParticleComponent.class).originalEffect.copy();
+                //set the emission mode to play once -- for its live time
+                //(set in the particle editor by default to 3 seconds)
+                ((RegularEmitter)effect.getControllers().first().emitter)
+                        .setEmissionMode(RegularEmitter.EmissionMode.EnabledUntilCycleEnd);
+                effect.setTransform(e.getComponent(ModelComponent.class).instance.transform);
+                effect.scale(3.25f, 1, 1.5f);
+                effect.init();
+                effect.start();
+                RenderSystem.particleSystem.add(effect);
+            }
+
+            if (!e.getComponent(StatusComponent.class).alive) return;
+
             Vector3 playerPosition = new Vector3();
             Vector3 enemyPosition = new Vector3();
-
             playerPosition = playerModel.instance.transform.getTranslation(playerPosition);
             enemyPosition = mod.instance.transform.getTranslation(enemyPosition);
-
             float dX = playerPosition.x - enemyPosition.x;
             float dZ = playerPosition.z  - enemyPosition.z;
-
             float theta = (float) (Math.atan2(dX, dZ));
 
             // Calculate the transforms

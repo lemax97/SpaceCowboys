@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Core;
 import com.mygdx.game.Settings;
@@ -22,7 +24,7 @@ public class RenderSystem extends EntitySystem {
     private ModelBatch batch;
     private Environment environment;
     private DirectionalShadowLight shadowLight;
-
+    public static ParticleSystem particleSystem;
     private static final float FOV = 67F;
     public static PerspectiveCamera perspectiveCamera =
             new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
@@ -42,6 +44,12 @@ public class RenderSystem extends EntitySystem {
         batch = new ModelBatch();
         gunCamera = new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
         gunCamera.far = 100f;
+
+        particleSystem = ParticleSystem.get();
+//        particleSystem = new ParticleSystem();
+        BillboardParticleBatch billboardParticleBatch = new BillboardParticleBatch();
+        billboardParticleBatch.setCamera(perspectiveCamera);
+        particleSystem.add(billboardParticleBatch);
     }
 
     private void setPerspectiveCamera(){
@@ -94,22 +102,23 @@ public class RenderSystem extends EntitySystem {
                 batch.render(mod.instance, environment);
             }
         }
-//        for (int i = 0; i < entities.size(); i++) {
-//            if (entities.get(i).getComponent(GunComponent.class) == null) {
-//                ModelComponent mod = entities.get(i).getComponent(ModelComponent.class);
-//                batch.render(mod.instance, environment);
-//                if (entities.get(i).getComponent(AnimationComponent.class) != null && !Settings.Paused) {
-//                    entities.get(i).getComponent(AnimationComponent.class).update(delta);
-//                }
-//            }
-//        }
         batch.end();
-//        renderParticleEffects();
-//        drawGun(delta);
+        renderParticleEffects();
+
         drawGun();
     }
 
-//    private void drawGun(float delta){
+    private void renderParticleEffects() {
+        batch.begin(perspectiveCamera);
+        particleSystem.update();/* technically not necessary for rendering*/
+        particleSystem.begin();
+        particleSystem.draw();
+        particleSystem.end();
+        batch.render(particleSystem);
+        batch.end();
+    }
+
+    //    private void drawGun(float delta){
     private void drawGun(){
         // clear the depth buffer; this is needed in order to display the gun with a different camera.
 

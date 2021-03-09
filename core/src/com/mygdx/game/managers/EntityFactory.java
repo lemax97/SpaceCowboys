@@ -4,11 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
@@ -37,6 +38,8 @@ public class EntityFactory {
     private static Model playerModel;
     private static Model enemyModel;
     public static RenderSystem renderSystem;
+    private static ModelComponent enemyModelComponent;
+    private static ModelData enemyModelData;
 
     static {
         modelBuilder = new ModelBuilder();
@@ -78,15 +81,28 @@ public class EntityFactory {
 
     public static Entity createEnemy(BulletSystem bulletSystem, float x, float y, float z){
         Entity entity = new Entity();
-        ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
-        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/monster.g3dj"));
+
         if (enemyModel == null){
+            ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
+            ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/monster.g3dj"));
             enemyModel = new Model(modelData, new TextureProvider.FileTextureProvider());
             for (Node node : enemyModel.nodes) {
                 node.scale.scl(0.001f);
             }
             enemyModel.calculateTransforms();
+
+            //add an attribute to the enemy's material to make it fade out.
+
+            enemyModelComponent = new ModelComponent(enemyModel, x, y, z);
+
+            Material material = enemyModelComponent.instance.materials.get(0);
+            BlendingAttribute blendingAttribute;
+            material.set(blendingAttribute = new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA));
+            enemyModelComponent.blendingAttribute = blendingAttribute;
         }
+
+        ((BlendingAttribute) enemyModelComponent.instance.materials.get(0).get(BlendingAttribute.Type)).opacity = 1;
+
         ModelComponent modelComponent = new ModelComponent(enemyModel, x, y, z);
         modelComponent.instance.transform.rotate(0, 1, 0, 270);
         entity.add(modelComponent);
@@ -109,6 +125,7 @@ public class EntityFactory {
         animationComponent.animate(EnemyAnimations.id, EnemyAnimations.offsetRun1, EnemyAnimations.durationRun1, -1, 1);
         entity.add(animationComponent);
         entity.add(new StatusComponent(animationComponent));
+        entity.add(new DieParticleComponent(renderSystem.particleSystem));
         return entity;
     }
 
@@ -162,10 +179,8 @@ public class EntityFactory {
     public static Entity loadScene(int x, int y, int z) {
         Entity entity = new Entity();
         ModelLoader<?> modelLoader = new G3dModelLoader(new JsonReader());
-//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena2.g3dj"));
-//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena.g3dj"));
-//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena3.g3dj"));
         ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena4.g3dj"));
+//        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal("data/arena3.g3dj"));
         Model model = new Model(modelData, new TextureProvider.FileTextureProvider());
         ModelComponent modelComponent = new ModelComponent(model, x, y, z);
         entity.add(modelComponent);
