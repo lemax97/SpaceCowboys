@@ -6,10 +6,12 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -30,6 +32,7 @@ public class RenderSystem extends EntitySystem {
             new PerspectiveCamera(FOV, Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT);
     public PerspectiveCamera gunCamera;
     public Entity gun;
+    private Vector3 position;
 
     public RenderSystem(){
         setPerspectiveCamera();
@@ -46,10 +49,13 @@ public class RenderSystem extends EntitySystem {
         gunCamera.far = 100f;
 
 //        particleSystem = ParticleSystem.get();
+
         particleSystem = new ParticleSystem();
         BillboardParticleBatch billboardParticleBatch = new BillboardParticleBatch();
         billboardParticleBatch.setCamera(perspectiveCamera);
         particleSystem.add(billboardParticleBatch);
+
+        position = new Vector3();
     }
 
     private void setPerspectiveCamera(){
@@ -67,6 +73,12 @@ public class RenderSystem extends EntitySystem {
 
     }
 
+    private boolean isVisible(Camera cam, final ModelInstance instance){
+        return cam.frustum.pointInFrustum(instance.transform.getTranslation(position));
+    }
+
+
+
     @Override
     public void addedToEngine(Engine engine){
         //get a list of all the entities containing 'ModelComponent'
@@ -83,9 +95,11 @@ public class RenderSystem extends EntitySystem {
         shadowLight.begin(Vector3.Zero, perspectiveCamera.direction);
         batch.begin(shadowLight.getCamera());
         for (int x = 0; x < entities.size(); x++) {
-            if (entities.get(x).getComponent(PlayerComponent.class) != null || entities.get(x).getComponent(EnemyComponent.class) != null){
+            if (entities.get(x).getComponent(PlayerComponent.class) != null ||
+                    entities.get(x).getComponent(EnemyComponent.class) != null){
                 ModelComponent mod = entities.get(x).getComponent(ModelComponent.class);
-                batch.render(mod.instance);
+                if (isVisible(perspectiveCamera, mod.instance))
+                    batch.render(mod.instance);
             }
             if (entities.get(x).getComponent(AnimationComponent.class) != null & Settings.Paused == false)
                 entities.get(x).getComponent(AnimationComponent.class).update(deltaTime);
