@@ -78,14 +78,6 @@ public class GameWorld {
         renderSystem.gun = gun;
     }
 
-//    private void createGround(){
-//        engine.addEntity(EntityFactory.createStaticEntity(groundModel, 0, 0, 0));
-//        engine.addEntity(EntityFactory.createStaticEntity(wallHorizontal, 0, 10, -20));
-//        engine.addEntity(EntityFactory.createStaticEntity(wallHorizontal, 0, 10, 20));
-//        engine.addEntity(EntityFactory.createStaticEntity(wallVertical, 20, 10, 0));
-//        engine.addEntity(EntityFactory.createStaticEntity(wallVertical, -20, 10, 0));
-//    }
-
     private void addSystems(GameUI gameUI){
         engine = new Engine();
         engine.addSystem(renderSystem = new RenderSystem());

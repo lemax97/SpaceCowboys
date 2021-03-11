@@ -1,8 +1,10 @@
 package com.mygdx.game.systems;
 
 import com.badlogic.ashley.core.*;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -13,9 +15,10 @@ import com.mygdx.game.GameWorld;
 import com.mygdx.game.Settings;
 import com.mygdx.game.UI.GameUI;
 import com.mygdx.game.components.*;
+import com.mygdx.game.widgets.ControllerWidget;
 
 
-public class PlayerSystem extends EntitySystem implements EntityListener {
+public class PlayerSystem extends EntitySystem implements EntityListener, InputProcessor {
 
     public static Entity dome;
     private Entity player;
@@ -73,8 +76,15 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
     }
 
     private void updateMovement(float delta) {
-        float deltaX = -Gdx.input.getDeltaX() * 0.5f;
-        float deltaY = -Gdx.input.getDeltaY() * 0.5f;
+        float deltaX = 0;
+        float deltaY = 0;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            deltaX = -ControllerWidget.getWatchVector().x * 1.5f;
+            deltaY = ControllerWidget.getWatchVector().y * 1.5f;
+        } else {
+            deltaX = -Gdx.input.getDeltaX() * 0.5f;
+            deltaY = -Gdx.input.getDeltaY() * 0.5f;
+        }
         tmp.set(0, 0, 0);
         camera.rotate(camera.up, deltaX);
         tmp.set(camera.direction).crs(camera.up).nor();
@@ -84,10 +94,19 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         characterComponent.characterDirection.set(-1, 0, 0).rot(modelComponent.instance.transform).nor();
         characterComponent.walkDirection.set(0,0,0);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) characterComponent.walkDirection.add(camera.direction);
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) characterComponent.walkDirection.sub(camera.direction);
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) tmp.set(camera.direction).crs(camera.up).scl(-1);
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) tmp.set(camera.direction).crs(camera.up);
+        if (Gdx.app.getType() == Application.ApplicationType.Android){
+            if (ControllerWidget.getMovementVector().y > 0) characterComponent.walkDirection.add(camera.direction);
+            if (ControllerWidget.getMovementVector().y < 0) characterComponent.walkDirection.sub(camera.direction);
+            if (ControllerWidget.getMovementVector().x < 0) tmp.set(camera.direction).crs(camera.up).scl(-1);
+            if (ControllerWidget.getMovementVector().x > 0) tmp.set(camera.direction).crs(camera.up);
+
+        } else {
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) characterComponent.walkDirection.add(camera.direction);
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) characterComponent.walkDirection.sub(camera.direction);
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) tmp.set(camera.direction).crs(camera.up).scl(-1);
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) tmp.set(camera.direction).crs(camera.up);
+        }
+
 
         characterComponent.walkDirection.add(tmp);
         characterComponent.walkDirection.scl(10f * delta);
@@ -99,10 +118,18 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
         ghost.getTranslation(translation);
         modelComponent.instance.transform.set(translation.x, translation.y, translation.z,
                 camera.direction.x, camera.direction.y, camera.direction.z, 0);
+
+        // Lastly, we would like the camera position to be set to the player so that it becomes
+        // first person.
         camera.position.set(translation.x, translation.y, translation.z);
         camera.update(true);
 
         dome.getComponent(ModelComponent.class).instance.transform.setToTranslation(translation.x, translation.y, translation.z);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            characterComponent.characterController.setJumpSpeed(25);
+            characterComponent.characterController.jump(new Vector3(0, 25, 0));
+        }
 
         if (Gdx.input.justTouched()) fire();
     }
@@ -138,4 +165,43 @@ public class PlayerSystem extends EntitySystem implements EntityListener {
     }
 
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 }

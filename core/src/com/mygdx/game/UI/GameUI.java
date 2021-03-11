@@ -1,5 +1,7 @@
 package com.mygdx.game.UI;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Core;
@@ -14,6 +16,8 @@ public class GameUI {
     private CrosshairWidget crosshairWidget;
     public GameOverWidget gameOverWidget;
 
+    private ControllerWidget controllerWidget;
+
     public GameUI(Core game) {
         this.game = game;
         stage = new Stage(new FitViewport(Core.VIRTUAL_WIDTH, Core.VIRTUAL_HEIGHT));
@@ -27,6 +31,8 @@ public class GameUI {
         pauseWidget = new PauseWidget(game, stage);
         crosshairWidget = new CrosshairWidget();
         gameOverWidget = new GameOverWidget(game, stage);
+        if (Gdx.app.getType() ==
+                Application.ApplicationType.Android) controllerWidget = new ControllerWidget();
     }
 
     public void configureWidgets(){
@@ -45,6 +51,7 @@ public class GameUI {
         stage.addActor(scoreWidget);
         stage.addActor(crosshairWidget);
         stage.setKeyboardFocus(pauseWidget);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) controllerWidget.addToStage(stage);
     }
 
     public void update(float delta) {
